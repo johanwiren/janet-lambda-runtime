@@ -2,3 +2,4 @@ build
 lambda
 jpm_tree
 .DS_Store
+.envrc

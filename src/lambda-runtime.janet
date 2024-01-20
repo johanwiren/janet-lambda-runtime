@@ -10,11 +10,11 @@
 
 (defn- invoke-api [request]
   (let [res (jurl/request request)]
-    (if (= 500 (get res :status))
+    (if (<= 500 (get res :status))
       (error "InternalServerErrorFromRuntimeAPI")
       res)))
 
-(defn- handler-init [f]
+(defn handler-init [f]
   (var res nil)
   (try
     (do (f) nil)
@@ -33,7 +33,7 @@
        (invoke-api))
   (gccollect))
 
-(defn- invocation [{:headers headers :body body}]
+(defn invocation [{:headers headers :body body}]
   (def ctx @{})
   (loop [[k v] :pairs headers :when (string/has-prefix? "lambda-" k)]
     (put ctx k v))
@@ -45,7 +45,7 @@
                          :method :get})]
     (invocation res)))
 
-(defn- lambda-response [handler get-invocation]
+(defn lambda-response [handler get-invocation]
   (def invocation (get-invocation))
   (def {:ctx ctx} invocation)
   (def {:lambda-runtime-aws-request-id request-id} ctx)
