@@ -63,7 +63,7 @@
    :body (if error
            (json/encode {:errorMessage error
                          :errorType "HandlerError"})
-           response)})
+           (json/encode response))})
 
 (defn serve [init handler]
   (init! init)
