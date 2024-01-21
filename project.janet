@@ -8,11 +8,6 @@
 (declare-source
  :source ["src/lambda-runtime.janet"])
 
-(declare-executable
- :name "runtime"
- :entry "src/example.janet"
- :install false)
-
 (task "test" []
       (-> (array "jpm_tree/bin/judge" ;(drop 2 (dyn :args)))
           (string/join " ")
