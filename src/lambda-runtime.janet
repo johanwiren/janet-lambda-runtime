@@ -65,20 +65,22 @@
                          :errorType "HandlerError"})
            response)})
 
-(defn- run-from-source []
-  (do
-    (setdyn :syspath (os/getenv "JANET_PATH"))
-    (import ./handler :as h)
-    (set handler-from-source? true)
-    ((compile '(h/main nil)))))
+(defn- run-from-source [handler]
+  (print "Running from source")
+  (setdyn :syspath (os/getenv "JANET_PATH"))
+  (import (string "./" handler) :as h)
+  (set handler-from-source? true)
+  ((compile '(h/main nil))))
 
 (defn serve [init handler]
-  (if (and (not handler-from-source?)
-           (os/stat "handler.janet"))
-    (run-from-source)
-    (do
-      (init! init)
-      (forever
-       (let [res (lambda-response handler get-invocation)]
-         (invoke-api res)
-         (gccollect))))))
+  (let [handler (os/getenv "_HANDLER")]
+    (if (and (not handler-from-source?)
+             (os/stat (string handler ".janet")))
+      (run-from-source handler)
+      (do
+        (init! init)
+        (forever
+         (let [res (lambda-response handler get-invocation)]
+           (invoke-api res)
+           (gccollect)))))))
+
